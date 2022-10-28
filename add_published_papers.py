@@ -48,7 +48,7 @@ def get_swe_paper_abstract(url):
         abstract = soup.find('div', {'class': 'abstractSection abstractInFull'})
         return abstract.text.lstrip().rstrip()
     elif "ieeexplore.ieee.org" in resp.url:
-        abstract = soup.find('div', {'class': 'abstract-text'})
+        abstract = soup.find("meta", {"property": "og:description"})["content"]
         return abstract.text
     return ''
 
