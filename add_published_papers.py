@@ -10,29 +10,20 @@ from sqlalchemy import create_engine
 from aslite.db import get_papers_db, get_metas_db
 
 def setup_logger(file_name, logger_name=None):
-
         if logger_name is None:
             logger_name = file_name
-
         path_logs = Path("./log")
-
         path_logs.mkdir(exist_ok=True, parents=True)
-
         logger = logging.getLogger(logger_name)
         logger.handlers.clear()
-
         log_file_name = f'{file_name}.log'
         log_file_path = path_logs / log_file_name
-
         log_format = logging.Formatter('%(name)s @ %(asctime)s [%(levelname)s] : %(message)s')
-
         file_handler = logging.FileHandler(log_file_path.as_posix(), mode='w')
         file_handler.setFormatter(log_format)
-
         logger.addHandler(file_handler)
         # logger.addHandler(logging.StreamHandler(sys.stdout))
         logger.setLevel(logging.INFO)
-
         return logger
 
 def grab_papers():
