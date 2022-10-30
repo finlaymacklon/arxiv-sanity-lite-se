@@ -41,6 +41,13 @@ Things to fix/add before it is reasonable to host a searchable, public, live ver
 - easier to just take ones from arxiv but can't be sure that all will share their work freely on arxiv
 - should have method to automatically check and update the database as papers are published, similarly to how Andrej Karpathy set up `arxiv_daemon.py` to run for `arxiv-sanity-lite`
 
+6) **do not repeatedly get abstracts for published papers we already have**
+- add method to check list of DOIs we already crawled and have abstracts for to avoid doubling up on crawl-time etc
+
+7) **Maybe add other venues**
+- candidates to add include AIIDE, for example because of some SE-related papers for games 
+- others to include..? not sure right now
+
 ## Repository structure
 It probably makes sense to instantiate a new repository and use the `arxiv-sanity-lite` and `general-index-se` forks just as submodules to use their code. Not sure, but would provide more control over posting issues/receiving contributions if that ever becomes a need.
 
