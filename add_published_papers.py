@@ -1,6 +1,7 @@
 """
 Read urls of papers from swepapers database, then scrape their abstracts and add data to the arxiv-sanity database.
 """
+import os
 import time
 import logging 
 from pathlib import Path
@@ -8,6 +9,8 @@ import requests
 from bs4 import BeautifulSoup
 from sqlalchemy import create_engine
 from aslite.db import get_papers_db, get_metas_db
+from dotenv import load_dotenv
+
 
 def setup_logger(file_name, logger_name=None):
     if logger_name is None:
@@ -28,7 +31,8 @@ def setup_logger(file_name, logger_name=None):
 
 def grab_papers():
     """Get a list of papers from swepapers database."""
-    engine = create_engine('postgresql://postgres:postgres@localhost:5432/swepapers')
+    load_dotenv()
+    engine = create_engine(f"postgresql://{os.environ['POSTGRES_SWEPAPERS_USERNAME']}:{os.environ['POSTGRES_SWEPAPERS_PASSWORD']}@localhost:{os.environ['POSTGRES_SWEPAPERS_PORT']}/swepapers")
     with engine.connect() as connection:
         result = connection.execute("SELECT authors, title, ee, doi FROM papers")
         papers = [dict(row) for row in result]
