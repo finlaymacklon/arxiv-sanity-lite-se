@@ -94,10 +94,10 @@ def render_pid(pid):
         weight = 0.0,
         id = d['_id'],
         title = d['title'],
-        time = d['_time_str'],
-        authors = ', '.join(a['name'] for a in d['authors']),
-        tags = ', '.join(t['term'] for t in d['tags']),
-        utags = [t for t, pids in tags.items() if pid in pids],
+        time = d['_time_str'] if '_time_str' in d else str(d['_time']),
+        authors = ', '.join(a['name'] if type(a) is dict else a for a in d['authors']),
+        tags = ', '.join(t['term'] for t in d['tags']) if 'tags' in d else '',
+        utags = [t for t, pids in tags.items() if pid in pids] if 'tags' in d else [],
         summary = d['summary'],
         thumb_url = thumb_url,
     )
@@ -180,8 +180,8 @@ def search_rank(q: str = ''):
     pairs = []
     for pid, p in pdb.items():
         score = 0.0
-        score += 10.0 * matchu(' '.join([a['name'] for a in p['authors']]))
-        score += 20.0 * matchu(p['title'])
+        score += 10.0 * matchu(' '.join([a['name'] if type(a) is dict else a for a in p['authors']])) if p['authors'] else 0.0
+        score += 20.0 * matchu(p['title']) if p['title'] else 0.0
         score += 1.0 * match(p['summary'])
         if score > 0:
             pairs.append((score, pid))

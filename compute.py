@@ -47,8 +47,19 @@ if __name__ == '__main__':
         # yield the abstracts of the papers
         for p in keys:
             d = pdb[p]
-            author_str = ' '.join([a['name'] for a in d['authors']])
-            yield ' '.join([d['title'], d['summary'], author_str])
+            author_str = ''
+            if d['authors'] is not None:
+                for a in d['authors']:
+                    if type(a) is dict:
+                        author_str += a['name'] + ' '
+                    else:
+                        author_str += a + ' '
+            abstract_str = d['title'] if d['title'] is not None else ''
+            abstract_str += ' ' + d['summary'] if d['summary'] is not None else ''
+            abstract_str += ' ' + author_str
+            yield abstract_str
+        # TODO when putting published papers in make sure we use empty strings not None
+        # or skip the entries that are missing authors, title, ... not sure what is best
 
     print("training tfidf vectors...")
     v.fit(make_corpus(training=True))
