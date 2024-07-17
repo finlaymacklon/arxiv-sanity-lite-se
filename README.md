@@ -1,9 +1,22 @@
 # arxiv-sanity-lite-se 
 
-A fork of [`arxiv-sanity-lite`](https://github.com/karpathy/arxiv-sanity-lite) for software engineering papers. 
+## About
 
-Currently in the process of integrating this with [`DatasetSEVenues`](https://github.com/ZeinabAk/DatasetSEVenues) to include published SE papers too. A better name could be `se-papers-sanity` when this is complete and working.
+A fork of [`karpathy/arxiv-sanity-lite`](https://github.com/karpathy/arxiv-sanity-lite) for software engineering papers. Intended to complement arXiv and Google Scholar.
 
-[Bug fixes and feature addition TODOs can be found here](TODO.md).
+Partially integrated this with [`ZeinabAk/DatasetSEVenues`](https://github.com/ZeinabAk/DatasetSEVenues) to include published SE papers too. Have not yet loaded in all papers from that dataset, but do have many.
 
-*Pull requests/contributons are welcome. Just make sure to compare across forks instead of making a pull request to the original `arxiv-sanity-lite` :P*
+## Live version
+
+[findsepapers.ca](https://findsepapers.ca)
+
+## Contributing
+Pull requests and contributions are welcome
+
+## Credits
+The code in this repository was based on the following projects:
+
+- `karpathy/arxiv-sanity-lite` by Andrej Karpathy
+  - [Documentation](https://github.com/karpathy/arxiv-sanity-lite/blob/master/README.md)
+- `ZeinabAk/DatasetSEVenues` by Zeinab Abou Khalil and Stefano Zacchiroli
+  - [Paper](https://arxiv.org/abs/2204.03254) 
