@@ -14,24 +14,6 @@
         </div>
         <br>
         <div>
-            <div><b>Email recommendations</b></div>
-            <div>
-                Users can receive regular new paper recommendations via email based on their tags.
-                (This is still being developed, may not be running or may be unreliable.)
-                Register your email address below to receive these recommendations.
-                To stop the recommendations simply delete your email address.
-            </div>
-            <div>
-                <form id="email-form" action="{{ url_for('register_email') }}" method="post">
-                    <div class="form-group">
-                        <input type="text" class="form-control" name="email" placeholder="Email address" value="{{ email }}">
-                    </div>
-                    <input type="submit" class="btn" value="Set">
-                </form>
-            </div>
-        </div>
-        <br>
-        <div>
             <a href="{{ url_for('logout') }}">Log out</a>
         </div>
     </div>
@@ -39,6 +21,7 @@
     <div>
 
         <div id="profile-warning">
+            <b>Original warning from arxiv-sanity-lite (also applies to findsepapers.ca):</b>
             <p>
             Okay, arxiv-sanity-lite uses a super lite version of
             "user accounts" where there are no passwords. Basically, you can "log in"
