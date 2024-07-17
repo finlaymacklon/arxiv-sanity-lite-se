@@ -6,18 +6,18 @@
 {% block content %}
 <div id="aboutwrap">
     <div>
-        A fork of <a href="https://github.com/karpathy/arxiv-sanity-lite" target="_blank">karpathy/arxiv-sanity-lite</a> for software engineering papers. Partially integrated with <a href="https://github.com/ZeinabAk/DatasetSEVenues" target="_blank">ZeinabAk/DatasetSEVenues</a> to include links to (some) published SE papers too. This website is intended to complement Google Scholar and arXiv.
+        This project (<a href="https://github.com/finlaymacklon/arxiv-sanity-lite-se" target="_blank">finlaymacklon/arxiv-sanity-lite-se</a>) is a forked version of <a href="https://github.com/karpathy/arxiv-sanity-lite" target="_blank">karpathy/arxiv-sanity-lite</a>, adjusted to instead crawl and serve links to software engineering papers. This project is partially integrated with <a href="https://github.com/ZeinabAk/DatasetSEVenues" target="_blank">ZeinabAk/DatasetSEVenues</a> to include links to (some) published SE papers too. This website is intended to complement Google Scholar and arXiv.
     </div>
 
     <br>
     <div>
-        This particular instance indexes papers ranging from 1998 to present, but is likely missing some papers that are not on arxiv.
+        This particular instance indexes papers ranging from 1998 to present, but is likely missing some papers that are not on arXiv. Also, hyperlinks to papers on IEEE, ACM, etc. are currently broken.
     </div>
     <br>
 
     <div>
         <b>Original Description from `arxiv-sanity-lite`:</b>
-        A much lighter-weight arxiv-sanity from-scratch re-write. Periodically polls arxiv API for new papers. Then allows users to tag papers of interest, and recommends new papers for each tag based on SVMs over tfidf features of paper abstracts. Allows one to search, rank, sort, slice and dice these results in a pretty web UI. Lastly, arxiv-sanity-lite can send you daily emails with recommendations of new papers based on your tags. Curate your tags, track recent papers in your area, and don't miss out!
+        A much lighter-weight arxiv-sanity from-scratch re-write. Periodically polls arxiv API for new papers. Then allows users to tag papers of interest, and recommends new papers for each tag based on SVMs over tfidf features of paper abstracts. Allows one to search, rank, sort, slice and dice these results in a pretty web UI. <s>Lastly, arxiv-sanity-lite can send you daily emails with recommendations of new papers based on your tags.</s> Curate your tags, track recent papers in your area, and don't miss out!
     </div>
 
     <br>
@@ -25,6 +25,8 @@
 
     <br>
     <div>Developed in spare time as a labor of love by <a href="https://twitter.com/karpathy">@karpathy</a>.</div>
+    <br>
+    <div>Adjusted to instead crawl/serve links to software engineering papers by <a href="https://github.com/finlaymacklon" tager="_blank">Finlay Macklon<a/></div>
 </div>
 {% endblock %}
 
