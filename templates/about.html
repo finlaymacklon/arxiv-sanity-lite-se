@@ -6,18 +6,21 @@
 {% block content %}
 <div id="aboutwrap">
     <div>
-        This project (<a href="https://github.com/finlaymacklon/arxiv-sanity-lite-se" target="_blank">finlaymacklon/arxiv-sanity-lite-se</a>) is a forked version of <a href="https://github.com/karpathy/arxiv-sanity-lite" target="_blank">karpathy/arxiv-sanity-lite</a>, adjusted to instead crawl and serve links to software engineering papers. This project is partially integrated with <a href="https://github.com/ZeinabAk/DatasetSEVenues" target="_blank">ZeinabAk/DatasetSEVenues</a> to include links to published SE papers too. This website is intended to complement Google Scholar and arXiv.
+	    This project (<a href="https://github.com/finlaymacklon/arxiv-sanity-lite-se" target="_blank"><small><tt>finlaymacklon/arxiv-sanity-lite-se</tt></small></a>) is a forked version of <a href="https://github.com/karpathy/arxiv-sanity-lite" target="_blank"><small><tt>karpathy/arxiv-sanity-lite</tt></small></a>, adjusted to instead crawl and serve links to software engineering (SE) papers. This project also leverages <a href="https://github.com/ZeinabAk/DatasetSEVenues" target="_blank"><small><tt>ZeinabAk/DatasetSEVenues</tt></small></a> to include links to papers from software engineering journals and conferences. This website is intended to complement Google Scholar and arXiv.
     </div>
 
     <br>
     <div>
-        This particular instance indexes papers ranging from 1998 to present, but is missing some SE papers that are not on arXiv (but can be found through ZeinabAk/DatasetSEVenues or GoogleScholar). Also, hyperlinks to papers on IEEE, ACM, etc. are currently broken.
+	    This particular instance indexes <b><tt>(a)</tt></b> arXiv papers tagged under <b>cs.SE</b> ranging from 1998 to present, and <b><tt>(b)</tt></b> software engineering journal/conference papers from 1971 to 2020. For any journal/conference paper that does not have an arXiv version, the following fields are possibly currently missing on this website: date published, abstract, authors.
     </div>
     <br>
-
+    <hr>
     <div>
-        <b>Original Description from `arxiv-sanity-lite`:</b>
-        A much lighter-weight arxiv-sanity from-scratch re-write. Periodically polls arxiv API for new papers. Then allows users to tag papers of interest, and recommends new papers for each tag based on SVMs over tfidf features of paper abstracts. Allows one to search, rank, sort, slice and dice these results in a pretty web UI. <s>Lastly, arxiv-sanity-lite can send you daily emails with recommendations of new papers based on your tags.</s> Curate your tags, track recent papers in your area, and don't miss out!
+	<b>Original Description from <small><tt>arxiv-sanity-lite</tt></small>:</b>
+    </div>
+    <br>
+    <div>
+	    A much lighter-weight arxiv-sanity from-scratch re-write. Periodically polls arxiv API for new papers. <s>Then allows users to tag papers of interest, and recommends new papers for each tag based on SVMs over tfidf features of paper abstracts.</s> Allows one to search, rank, sort, slice and dice these results in a pretty web UI. <s>Lastly, arxiv-sanity-lite can send you daily emails with recommendations of new papers based on your tags. Curate your tags,</s> track recent papers in your area, and don't miss out!
     </div>
 
     <br>
@@ -26,7 +29,9 @@
     <br>
     <div>Developed in spare time as a labor of love by <a href="https://twitter.com/karpathy">@karpathy</a>.</div>
     <br>
-    <div>Adjusted to instead crawl/serve links to software engineering papers by <a href="https://github.com/finlaymacklon" tager="_blank">Finlay Macklon<a/></div>
+    <hr>
+    <div><small><i>Adjusted to instead crawl/serve links to software engineering papers by <a href="https://github.com/finlaymacklon" tager="_blank">@finlaymacklon<a/></small></i>
+   <br></div>
 </div>
 {% endblock %}
 
