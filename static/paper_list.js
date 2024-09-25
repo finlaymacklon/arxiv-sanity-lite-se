@@ -1,17 +1,5 @@
 'use strict';
 
-const UTag = props => {
-    const tag_name = props.tag;
-    const turl = "/?rank=tags&tags=" + tag_name;
-    return (
-        <div class='rel_utag'>
-            <a href={turl}>
-                {tag_name}
-            </a>
-        </div>
-    )
-}
-
 const Paper = props => {
     const p = props.paper;
     const similar_url = "/?rank=pid&pid=" + p.id;
@@ -32,7 +20,6 @@ const Paper = props => {
         <div class='rel_authors'>{p.authors}</div>
         <div class="rel_time">{p.time}</div>
         <div class='rel_abs'>{p.summary}</div>
-        <div class='rel_more'><a href={similar_url}>similar</a></div>
     </div>
     )
 }
