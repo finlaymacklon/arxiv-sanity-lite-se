@@ -169,13 +169,13 @@ def svm_rank(pid: str = '', C: float = 0.01):
 
 
 def search_rank(q: str = ''):
-    if not q:
+    if (q is None) or (q == ""):
         return [], []  # no query? no results
 
     # sanitize the query using a regex to remove any non-alphanumeric characters
     sanitized_query = sanitize_string(q)
 
-    query_split = sanitized_query.lower().strip().split() # make lowercase then split query by spaces
+    query_split = sanitized_query.lower().strip().split()  # make lowercase then split query by spaces
 
     pdb = get_papers()
 
@@ -247,7 +247,7 @@ def main():
 
     # if a query is given, override rank to be of type "search"
     # this allows the user to simply hit ENTER in the search field and have the correct thing happen
-    if opt_q is None:
+    if (opt_q is not None) and (opt_q != ""):
         opt_rank = 'search'
 
     # try to parse opt_svm_c into something sensible (a float)
@@ -258,19 +258,23 @@ def main():
         C = 0.01  # sensible default, i think
 
     # clean up the pid parameter
-    if opt_pid is not None:
+    if (opt_pid is not None) and (opt_pid != ""):
         opt_pid = sanitize_string(opt_pid)
 
     # rank papers: by tags, by time, by random
     words = []  # only populated in the case of svm rank
     if opt_rank == 'search':
         pids, scores = search_rank(q=opt_q)
+
     elif opt_rank == 'pid':
         pids, scores, words = svm_rank(pid=opt_pid, C=C)
+
     elif opt_rank == 'time':
         pids, scores = time_rank()
+
     elif opt_rank == 'random':
         pids, scores = random_rank()
+
     else:
         # raise ValueError("opt_rank %s is not a thing" % (opt_rank, ))
         # Invalid rank parameter passed, so render empty index
@@ -279,7 +283,7 @@ def main():
     # filter by time
     if (opt_time_filter is not None) and (opt_time_filter != default_time_filter):
         mdb = get_metas()
-        kv = {k:v for k,v in mdb.items()}  # read all of metas to memory at once, for efficiency
+        kv = {k: v for k, v in mdb.items()}  # read all of metas to memory at once, for efficiency
         tnow = time.time()
 
         try:
