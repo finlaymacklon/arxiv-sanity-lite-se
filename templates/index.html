@@ -35,13 +35,22 @@ var move_page = function(int_offset) {
                 <label for="rank_type">Rank by:</label>
                 <select name="rank" id="rank_select">
                     <option value="search" {{ gvars.rank == 'search' and 'selected' }}>search</option>
+		            <option value="pid" {{ gvars.rank == 'pid' and 'selected' }}>pid</option>
                     <option value="time" {{ gvars.rank == 'time' and 'selected' }}>time</option>
                     <option value="random" {{ gvars.rank == 'random' and 'selected' }}>random</option>
                 </select>
 
+                <!-- current pid, simply in a text field -->
+        		<label for="pid">pid: </label>
+        		<input name="pid" type="text" id="pid_field" value="{{ gvars.pid }}">
+
                 <!-- current time_filter, in a text field -->
                 <label for="time_filter">time_filter (days): </label>
                 <input name="time_filter" type="text" id="time_filter_field" value="{{ gvars.time_filter }}">
+
+                <!-- current svm_c, in a text field -->
+                <label for="svm_c">svm_c: </label>
+                <input name="svm_c" type="text" id="svm_c_field" value="{{ gvars.svm_c }}">
 
                 <input type="submit" value="Submit">
             </form>
@@ -58,11 +67,6 @@ var move_page = function(int_offset) {
 
     </div>
 </div>
-
-{% if user and words %}
-<div id="wordwrap" style="display:none;">
-</div>
-{% endif %}
 
 <!-- main content showing all the papers as a list -->
 <div id="wrap">

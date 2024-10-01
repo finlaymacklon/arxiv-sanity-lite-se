@@ -120,12 +120,60 @@ def time_rank():
     scores = [(tnow - v['_time'])/60/60/24 for k, v in ms] # time delta in days
     return pids, scores
 
+def svm_rank(pid: str = '', C: float = 0.01):
+
+    # tag can be one tag or a few comma-separated tags or 'all' for all tags we have in db
+    # pid can be a specific paper id to set as positive for a kind of nearest neighbor search
+    if pid is None or pid == '':
+        return [], [], []
+
+    # load all of the features
+    features = load_features()
+    x, pids = features['x'], features['pids']
+    n, d = x.shape
+    ptoi, itop = {}, {}
+    for i, p in enumerate(pids):
+        ptoi[p] = i
+        itop[i] = p
+
+    if pid not in ptoi:
+        # this paper ID does not exist in our index
+        return [], [], []
+
+    # construct the positive set
+    y = np.zeros(n, dtype=np.float32)
+    y[ptoi[pid]] = 1.0
+
+    if y.sum() == 0:
+        return [], [], []  # there are no positives?
+
+    # classify
+    clf = svm.LinearSVC(class_weight='balanced', verbose=False, max_iter=10000, tol=1e-6, C=C)
+    clf.fit(x, y)
+    s = clf.decision_function(x)
+    sortix = np.argsort(-s)
+    pids = [itop[ix] for ix in sortix]
+    scores = [100 * float(s[ix]) for ix in sortix]
+
+    # get the words that score most positively and most negatively for the svm
+    ivocab = {v:k for k,v in features['vocab'].items()} # index to word mapping
+    weights = clf.coef_[0] # (n_features,) weights of the trained svm
+    sortix = np.argsort(-weights)
+    words = []
+    for ix in list(sortix[:40]) + list(sortix[-20:]):
+        words.append({
+            'word': ivocab[ix],
+            'weight': weights[ix],
+        })
+    return pids, scores, words
+
+
 def search_rank(q: str = ''):
     if not q:
         return [], []  # no query? no results
 
     # sanitize the query using a regex to remove any non-alphanumeric characters
-    sanitized_query = sanitize_query(q)
+    sanitized_query = sanitize_string(q)
 
     query_split = sanitized_query.lower().strip().split() # make lowercase then split query by spaces
 
@@ -149,8 +197,8 @@ def search_rank(q: str = ''):
 
 
 # helper function
-def sanitize_query(query):
-    """Sanitizes a query by allowing hyphens for author names and removing other non-alphanumeric characters."""
+def sanitize_string(string):
+    """Only include alphanumeric characters (and some special chars) for the search query or DOI"""
 
     # Regex Pattern Explanation:
     # [^a-zA-Z0-9 -]+: Matches any sequence of one or more characters that are NOT:
@@ -161,10 +209,13 @@ def sanitize_query(query):
     #   * -: hyphen
     #   * :: colon
     #   * ': apostrophe
-    #   * ": quotation mark
+    #   * ?: question mark
+    #   * !: exclamation point
+    #   * .: decimal point / period / full-stop
+    #   * /: forward slash
 
-    sanitized_query = re.sub(r'[^a-zA-Z0-9 -:\'\"]+', '', query) 
-    return sanitized_query
+    string_sanitized = re.sub(r'[^a-zA-Z0-9 -:\'\".?!\/]]+', '', string) 
+    return string_sanitized
 
 # -----------------------------------------------------------------------------
 # primary application endpoints
@@ -172,7 +223,7 @@ def sanitize_query(query):
 def default_context():
     # any global context across all pages, e.g. related to the current user
     context = {}
-    context['user'] = g.user if g.user is not None else ''
+    # context['user'] = g.user if g.user is not None else ''
     return context
 
 @app.route('/', methods=['GET'])
@@ -180,40 +231,55 @@ def main():
 
     # default settings
     default_rank = 'time'
-    # default_tags = ''
     default_time_filter = ''
-    # default_skip_have = 'no'
 
     # override variables with any provided options via the interface
     opt_rank = request.args.get('rank', default_rank) # rank type. search|tags|pid|time|random
     opt_q = request.args.get('q', '') # search request in the text box
+    opt_pid = request.args.get('pid', '')  # pid to find nearest neighbors to
     opt_time_filter = request.args.get('time_filter', default_time_filter) # number of days to filter by
+    opt_svm_c = request.args.get('svm_c', '') # svm C parameter
     opt_page_number = request.args.get('page_number', '1') # page number for pagination
 
     # only allow valid opt_ranks and default to time
-    if opt_rank not in ["search", "time", "random"]:
-        opt_rank = 'time'
+    if opt_rank not in ["search", "pid", "time", "random"]:
+        opt_rank = default_rank
 
     # if a query is given, override rank to be of type "search"
     # this allows the user to simply hit ENTER in the search field and have the correct thing happen
-    if opt_q:
+    if opt_q is None:
         opt_rank = 'search'
 
+    # try to parse opt_svm_c into something sensible (a float)
+    try:
+        C = float(opt_svm_c)
+
+    except ValueError:
+        C = 0.01  # sensible default, i think
+
+    # clean up the pid parameter
+    if opt_pid is not None:
+        opt_pid = sanitize_string(opt_pid)
+
     # rank papers: by tags, by time, by random
-    words = [] # only populated in the case of svm rank
+    words = []  # only populated in the case of svm rank
     if opt_rank == 'search':
         pids, scores = search_rank(q=opt_q)
+    elif opt_rank == 'pid':
+        pids, scores, words = svm_rank(pid=opt_pid, C=C)
     elif opt_rank == 'time':
         pids, scores = time_rank()
     elif opt_rank == 'random':
         pids, scores = random_rank()
     else:
-        raise ValueError("opt_rank %s is not a thing" % (opt_rank, ))
+        # raise ValueError("opt_rank %s is not a thing" % (opt_rank, ))
+        # Invalid rank parameter passed, so render empty index
+        return render_template('index.html', default_context())
 
     # filter by time
-    if opt_time_filter:
+    if (opt_time_filter is not None) and (opt_time_filter != default_time_filter):
         mdb = get_metas()
-        kv = {k:v for k,v in mdb.items()} # read all of metas to memory at once, for efficiency
+        kv = {k:v for k,v in mdb.items()}  # read all of metas to memory at once, for efficiency
         tnow = time.time()
 
         try:
@@ -231,14 +297,21 @@ def main():
         keep = [i for i,pid in enumerate(pids) if (tnow - kv[pid]['_time']) < deltat]
         pids, scores = [pids[i] for i in keep], [scores[i] for i in keep]
 
+    # optionally hide papers we already have
+    # if opt_skip_have == 'yes':
+    #     tags = get_tags()
+    #     have = set().union(*tags.values())
+    #     keep = [i for i,pid in enumerate(pids) if pid not in have]
+    #     pids, scores = [pids[i] for i in keep], [scores[i] for i in keep]
+
     # crop the number of results to RET_NUM, and paginate
     try:
         page_number = max(1, int(opt_page_number))
     except ValueError:
         page_number = 1
 
-    start_index = (page_number - 1) * RET_NUM # desired starting index
-    end_index = min(start_index + RET_NUM, len(pids)) # desired ending index
+    start_index = (page_number - 1) * RET_NUM  # desired starting index
+    end_index = min(start_index + RET_NUM, len(pids))  # desired ending index
     pids = pids[start_index:end_index]
     scores = scores[start_index:end_index]
 
@@ -255,10 +328,55 @@ def main():
     context['words_desc'] = "Here are the top 40 most positive and bottom 20 most negative weights of the SVM. If they don't look great then try tuning the regularization strength hyperparameter of the SVM, svm_c, above. Lower C is higher regularization."
     context['gvars'] = {}
     context['gvars']['rank'] = opt_rank
+    # context['gvars']['tags'] = opt_tags
+    context['gvars']['pid'] = opt_pid
     context['gvars']['time_filter'] = opt_time_filter
+    # context['gvars']['skip_have'] = opt_skip_have
     context['gvars']['search_query'] = opt_q
+    context['gvars']['svm_c'] = str(C)
     context['gvars']['page_number'] = str(page_number)
     return render_template('index.html', **context)
+
+@app.route('/inspect', methods=['GET'])
+def inspect():
+
+    # fetch the paper of interest based on the pid
+    pid = request.args.get('pid', '')
+    pdb = get_papers()
+    if pid not in pdb:
+        return "error, malformed pid" # todo: better error handling
+
+    # load the tfidf vectors, the vocab, and the idf table
+    features = load_features()
+    x = features['x']
+    idf = features['idf']
+    ivocab = {v:k for k,v in features['vocab'].items()}
+    pix = features['pids'].index(pid)
+    wixs = np.flatnonzero(np.asarray(x[pix].todense()))
+    words = []
+    for ix in wixs:
+        words.append({
+            'word': ivocab[ix],
+            'weight': float(x[pix, ix]),
+            'idf': float(idf[ix]),
+        })
+    words.sort(key=lambda w: w['weight'], reverse=True)
+
+    # package everything up and render
+    paper = render_pid(pid)
+    context = default_context()
+    context['paper'] = paper
+    context['words'] = words
+    context['words_desc'] = "The following are the tokens and their (tfidf) weight in the paper vector. This is the actual summary that feeds into the SVM to power recommendations, so hopefully it is good and representative!"
+    return render_template('inspect.html', **context)
+
+#@app.route('/profile')
+#def profile():
+#    context = default_context()
+#    with get_email_db() as edb:
+#        email = edb.get(g.user, '')
+#        context['email'] = email
+#    return render_template('profile.html', **context)
 
 @app.route('/stats')
 def stats():

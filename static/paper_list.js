@@ -1,9 +1,10 @@
 'use strict';
 
+
 const Paper = props => {
     const p = props.paper;
     const similar_url = "/?rank=pid&pid=" + p.id;
-    // if the user is logged in then we can show add/sub buttons
+    const inspect_url = "/inspect?pid=" + p.id;
     // provide the correct href depending on what the id is set as
     let url_base = null;
     if (p.id.includes("http://") || p.id.includes("https://")) {
@@ -20,6 +21,8 @@ const Paper = props => {
         <div class='rel_authors'>{p.authors}</div>
         <div class="rel_time">{p.time}</div>
         <div class='rel_abs'>{p.summary}</div>
+        <div class='rel_more'><a href={similar_url}>similar</a></div>
+        <div class='rel_inspect'><a href={inspect_url}>inspect</a></div>
     </div>
     )
 }
